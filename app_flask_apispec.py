@@ -1,5 +1,6 @@
 from flask import Flask, g
-from flask_apispec import marshal_with, MethodResource, FlaskApiSpec
+from flask_apispec import marshal_with, use_kwargs, MethodResource, FlaskApiSpec
+from flask_cors import CORS
 
 from marshmallow import Schema, fields as ma_fields
 
@@ -12,6 +13,7 @@ DAO.create({'name': 'remi'})
 DAO.create({'name': 'caro'})
 
 app = Flask(__name__)
+CORS(app)
 
 """
 ### flask_apispec implementation
@@ -48,6 +50,9 @@ class UserSchema(Schema):
     id = ma_fields.Integer()
     name = ma_fields.String()
 
+    class Meta:
+        strict = True
+
 
 class LoginSchema(Schema):
     logged_user = ma_fields.String()
@@ -59,14 +64,26 @@ class UserListResource(MethodResource):
     def get(self):
         return DAO.users
 
-    @marshal_with(UserSchema(many=True))
-    def post(self):
-        return DAO.users
+    @use_kwargs(UserSchema)
+    @marshal_with(UserSchema)
+    def post(self, **kwargs):
+        user = DAO.create(kwargs)
+        return user, 201
+
+
+@route(app, spec, '/user/<int:id>')
+class UserResource(MethodResource):
+    @use_kwargs(UserSchema)
+    @marshal_with(UserSchema)
+    def put(self, id, **kwargs):
+        user = DAO.get(id)
+        user.update(kwargs)
+        return user
 
 
 @route(app, spec, '/protected')
 class ProtectedResource(MethodResource):
     @login_required
-    @marshal_with(LoginSchema())
+    @marshal_with(LoginSchema)
     def get(self):
         return {'logged_user': g.logged_user}

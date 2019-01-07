@@ -1,5 +1,6 @@
 from flask import Flask, g
 from flask_restplus import Api, Resource, fields
+from flask_cors import CORS
 
 from decorators import login_required
 from models import UserDAO
@@ -9,6 +10,7 @@ DAO.create({'name': 'remi'})
 DAO.create({'name': 'caro'})
 
 app = Flask(__name__)
+CORS(app)
 
 """
 ### flask_restplus implementation
@@ -31,6 +33,9 @@ class UserListResource(Resource):
     def get(self):
         return DAO.users, 200
 
+    @api.doc('create_user')
+    @api.expect(user)
+    @api.marshal_with(user, code=201)
     def post(self):
         return DAO.create(api.payload), 201
 
