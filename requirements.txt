@@ -1,6 +1,7 @@
 apispec==0.39.0
 click==6.7
 Flask==1.0.2
+flask-apispec==0.7.0
 flask-restplus==0.11.0
 Flask-Cors==3.0.6
 Jinja2==2.10
