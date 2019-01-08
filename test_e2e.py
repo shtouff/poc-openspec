@@ -23,7 +23,7 @@ def test_app(test_client, user_list_url):
 @pytest.mark.parametrize('test_client,swagger_url', [
     (app_flask_restplus.test_client(), '/swagger.json'),
     (app_ma_apispec.test_client(), '/swagger.json'),
-    (app_flask_apispec.test_client(), '/swagger/'),
+    (app_flask_apispec.test_client(), '/swagger.json'),
 ])
 def test_app_swagger(test_client, swagger_url):
     response = test_client.get(swagger_url)

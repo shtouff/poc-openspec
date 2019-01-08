@@ -1,3 +1,5 @@
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
 from flask import Flask, g
 from flask_apispec import marshal_with, use_kwargs, MethodResource, FlaskApiSpec
 from flask_cors import CORS
@@ -43,6 +45,15 @@ def route(app, spec, *urls, **kwargs):
     return wrapper
 
 
+app.config.update({
+    'APISPEC_SPEC': APISpec(
+        title='Flask-apispec user API',
+        version='1.0',
+        plugins=(MarshmallowPlugin(), ),
+    ),
+    'APISPEC_SWAGGER_URL': '/swagger.json',
+})
+
 spec = FlaskApiSpec(app)
 
 
@@ -79,6 +90,10 @@ class UserResource(MethodResource):
         user = DAO.get(id)
         user.update(kwargs)
         return user
+
+    @marshal_with(UserSchema)
+    def get(self, id):
+        return DAO.get(id)
 
 
 @route(app, spec, '/protected')
