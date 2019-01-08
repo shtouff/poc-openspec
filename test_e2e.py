@@ -28,10 +28,23 @@ def test_app(test_client, user_list_url):
 def test_app_swagger(test_client, swagger_url):
     response = test_client.get(swagger_url)
     assert_is_json(response)
-
     swagger = response.json
-    assert swagger.get('swagger') == '2.0'
-    assert 'post' in swagger.get('paths', {}).get('/user', {})
+
+    assert 'swagger' in swagger
+    assert swagger['swagger'] == '2.0'
+
+    assert 'paths' in swagger
+    assert 'definitions' in swagger
+    assert 'info' in swagger
+
+    assert '/user' in swagger['paths']
+    assert '/protected' in swagger['paths']
+    assert '/user/{id}' in swagger['paths']
+
+    assert 'post' in swagger['paths']['/user']
+    assert 'get' in swagger['paths']['/user']
+    assert 'get' in swagger['paths']['/protected']
+    assert 'put' in swagger['paths']['/user/{id}']
 
 
 @pytest.mark.parametrize('test_client,protected_url', [
