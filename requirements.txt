@@ -9,5 +9,5 @@ MarkupSafe==1.0
 marshmallow==2.16.1
 mysqlclient==1.3.13
 pytest==4.0.2
-requests==2.19.1
+requests==2.21.0
 SQLAlchemy==1.2.12
